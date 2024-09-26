@@ -13,14 +13,14 @@ class DBConfig:
         
     def load_db_config(file_path):
         config=None
-        
+            
         with open(file_path, 'r') as file:
-            config=json.load(file)
-            config= config["dbpath"]
-            if config:
-                return DBConfig(chemin)
+            if(config):
+                print("Le fichier n'est pas dispobile")
             else:
-                raise IOError("The configuration file is empty or contains an invalid path.")
+                config=json.load(file)
+                config= config["dbpath"]
+
             
         
         # try:
