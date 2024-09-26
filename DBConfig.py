@@ -12,14 +12,14 @@ class DBConfig:
         self.dbpath = dbpath
         
     def load_db_config(file_path):
-        config=None
-            
-        with open(file_path, 'r') as file:
-            if(config):
-                print("Le fichier n'est pas dispobile")
-            else:
+        
+        try:
+            with open(file_path, 'r') as file:
                 config=json.load(file)
-                config= config["dbpath"]
+                configPath = config["dbpath"]
+                return DBConfig(configPath)
+        except Exception as openFail:
+            print(f"erreur d'ouverture de fichier = {openFail}")
 
             
         
