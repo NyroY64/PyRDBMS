@@ -1,9 +1,15 @@
 import json
+import os 
 
 class DBConfig:
     def __init__(self, dbpath):
         self.dbpath = dbpath
 
+    def get_dbpath(self):
+        return self.dbpath
+
+    def set_dbpath(self, dbpath):
+        self.dbpath = dbpath
         
     def load_db_config(file_path):
         config=None
@@ -11,7 +17,10 @@ class DBConfig:
         with open(file_path, 'r') as file:
             config=json.load(file)
             config= config["dbpath"]
-            DBConfig(config)
+            if config:
+                return DBConfig(chemin)
+            else:
+                raise IOError("The configuration file is empty or contains an invalid path.")
             
         
         # try:
