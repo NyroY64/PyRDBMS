@@ -10,8 +10,8 @@ class DBConfig:
         
         with open(file_path, 'r') as file:
             config=json.load(file)
-            config= config["dbms_settings"]["dbpath"]
-            return config
+            config= config["dbpath"]
+            DBConfig(config)
             
         
         # try:
