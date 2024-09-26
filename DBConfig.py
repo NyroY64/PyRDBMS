@@ -2,8 +2,11 @@ import json
 import os 
 
 class DBConfig:
-    def __init__(self, dbpath):
+    def __init__(self, dbpath ,pageSize ,dm_maxfilesize):
         self.dbpath = dbpath
+        self.pageSize=pageSize
+        self.dm_maxfilesize=dm_maxfilesize
+    
 
     def get_dbpath(self):
         return self.dbpath
@@ -16,8 +19,9 @@ class DBConfig:
         try:
             with open(file_path, 'r') as file:
                 config=json.load(file)
-                configPath = config["dbpath"]
-                return DBConfig(configPath)
+
+                return DBConfig(config["dbpath"] ,config["pageSize"] ,config["dm_maxfilesize"])
+            
         except Exception as openFail:
             print(f"erreur d'ouverture de fichier = {openFail}")
 

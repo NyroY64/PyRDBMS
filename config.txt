@@ -1,5 +1,8 @@
 {
-  "dbpath":"config.txt"
+  "dbpath":"config.txt",
+  "pageSize":1024,
+  "dm_maxfilesize":4096
+
 }
   
   
