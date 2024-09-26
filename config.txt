@@ -1,1 +1,34 @@
-dbpath:"hello my name is "
+{
+  "dbms_settings": {
+    "dbpath":"configFile.txt",
+    "max_connections": 100,
+    "timeout": 30,
+    "cache_size": 256,
+    "log_level": "INFO",
+    "storage_engine": "InnoDB",
+    "data_directory": "/var/dbms/data",
+    "log_directory": "/var/dbms/logs",
+    "backup_directory": "/var/dbms/backups",
+    "default_isolation_level": "READ_COMMITTED",
+    "supported_sql_versions": ["SQL92", "SQL99", "SQL2003"]
+  },
+  "security": {
+    "encryption_enabled": true,
+    "encryption_algorithm": "AES-256",
+    "require_ssl": true,
+    "firewall_enabled": true,
+    "allowed_ip_ranges": ["192.168.1.0/24", "10.0.0.0/8"]
+  },
+  "performance": {
+    "query_cache_size": 64,
+    "max_threads": 8,
+    "io_threads": 4,
+    "lock_timeout": 10
+  },
+  "backup": {
+    "automatic_backups": true,
+    "backup_frequency": "daily",
+    "backup_time": "02:00",
+    "retention_period_days": 30
+  }
+}
