@@ -14,6 +14,8 @@ class DBConfig:
     def set_dbpath(self, dbpath):
         self.dbpath = dbpath
         
+        
+        
     def load_db_config(file_path):
         
         try:
