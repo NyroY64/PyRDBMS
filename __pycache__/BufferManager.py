@@ -1,3 +1,5 @@
+import json
+
 class BufferManager:
     def __init__(self, db_config, disk_manager):
         self.db_config = db_config
@@ -17,5 +19,19 @@ class BufferManager:
         self.buffer_pool.append((pageId, buffer))
 
         return buffer
+
+    def FreePage(self, pageId, valdirty):
+        for i, (pid, buffer, pin_count, dirty_flag) in enumerate(self.buffer_pool):
+            if pid == pageId:
+                if pin_count > 0:
+                    pin_count -= 1
+                else:
+                    print("Erreur : pin_count déjà à zéro !")
+
+                if valdirty:
+                    dirty_flag = True
+
+                self.buffer_pool[i] = (pid, buffer, pin_count, dirty_flag)
+                return
 
 
