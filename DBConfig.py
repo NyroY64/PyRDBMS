@@ -14,9 +14,10 @@ class DBConfig:
     def set_dbpath(self, dbpath):
         self.dbpath = dbpath
         
-        Le type de méthode LoadDBConfig : Vous l'avez définie comme une méthode classique de la classe, mais elle n'utilise pas l'instance (self).
-        Cela signifie qu'elle devrait être définie comme une méthode statique (ou classe) en utilisant @staticmethod.......
-        
+        #Le type de méthode LoadDBConfig : Vous l'avez définie comme une méthode classique de la classe, mais elle n'utilise pas l'instance (self).
+        #Cela signifie qu'elle devrait être définie comme une méthode statique (ou classe) en utilisant @staticmethod.......
+    
+    @staticmethod    
     def load_db_config(file_path):
         
         try:
