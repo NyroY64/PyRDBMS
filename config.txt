@@ -1,5 +1,5 @@
 {
-  "dbpath":"config.txt",
+  "dbpath":"config.txt", #normalement ici on mets un path non ? chemin/mother/father/chkpi.db
   "pageSize":1024,
   "dm_maxfilesize":4096
 
