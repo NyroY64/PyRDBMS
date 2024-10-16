@@ -1,5 +1,5 @@
 class DiskManager:
-    def __init__(self, (db_config):
+    def __init__(self, db_config):
       self.db_config=db_config
 
      def __repr__(self):
