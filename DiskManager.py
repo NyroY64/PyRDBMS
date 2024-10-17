@@ -90,7 +90,6 @@ class DiskManager:
             if file_size + self.db_config.pagesize <= self.db_config.dm_maxfilesize:
                 # Le fichier a de la place, ajouter une nouvelle page
                 page_idx = file_size // self.db_config.pagesize
-                self._write_empty_page(file_idx, file_size)  # Ajouter physiquement la page au fichier
                 return PageId(file_idx, page_idx)
 
         # 3. Créer un nouveau fichier si tous les fichiers sont pleins
