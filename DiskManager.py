@@ -22,15 +22,9 @@ class DiskManager:
                 with open(f"./{self.dbc.dbpath}/BinData/F{last_file}.rsdb", "rb") as fichier:
                     if len(fichier.read()) < self.dbc.dm_maxfilesize:
                         return PageId(last_file, len(fichier.read())//self.dbc.pageSize)
-                    elif len(fichier.read()) == self.dbc.dm_maxfilesize:
-                        #we alcate space in the file
-                        with open(f"./{self.dbc.dbpath}/BinData/F{last_file}.rsdb", "ab") as fichier:
-                            fichier.write(b'\x00' * self.dbc.pageSize)
-                            return PageId(last_file, len(fichier.read())//self.dbc.pageSize)
                     else:
                         #we create a new file
                         with open(f"./{self.dbc.dbpath}/BinData/F{last_file+1}.rsdb", "wb") as fichier:
-                            fichier.write(b'\x00' * self.dbc.pageSize)  # Init the file with one empty page
                             return PageId(last_file + 1, 0)
             except Exception as openFail:
                 print(f"erreur d'ouverture de fichier = {openFail}")            
