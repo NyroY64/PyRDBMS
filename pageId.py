@@ -1,4 +1,4 @@
-class pageId:
+class PageId:
     def __init__(self, FileIdx, PageIdx ):
       self.FileIdx = FileIdx
       self.PageIdx = PageIdx
