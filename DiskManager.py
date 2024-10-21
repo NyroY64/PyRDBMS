@@ -1,45 +1,76 @@
 import os
+from pageId import PageId
 
 class DiskManager:
     def __init__(self, dbc):
       self.dbc=dbc
       
     
-    def AlocPage():
-        self.loadState()
-        # if the list of free pages is not empty
-        if not self.free_pages:
-          free_page=self.free_pages.pop(0)
-          return PageId(free_page[0], free_page[1])
-          
+            
+    def AllocPage(self):
+        self.LoadState()
+        # If there are any free pages, reuse one
+        if self.free_pages:
+            free_page = self.free_pages.pop(0)
+            self.SaveState()
+            return free_page
         else:
             try:
-                #we check the last file
-                files=os.listdir(f"./{self.dbc.dbpath}/BinData")
-                last_file = files[-1]
-                
-                #we check if the last file is not full
-                with open(f"./{self.dbc.dbpath}/BinData/F{last_file}.rsdb", "rb") as fichier:
-                    if len(fichier.read()) < self.dbc.dm_maxfilesize:
-                        return PageId(last_file, len(fichier.read())//self.dbc.pageSize)
-                    elif len(fichier.read()) == self.dbc.dm_maxfilesize:
-                        #we alcate space in the file
-                        with open(f"./{self.dbc.dbpath}/BinData/F{last_file}.rsdb", "ab") as fichier:
-                            fichier.write(b'\x00' * self.dbc.pageSize)
-                            return PageId(last_file, len(fichier.read())//self.dbc.pageSize)
+                data_dir = os.path.join(self.dbc.dbpath, "BinData")
+                os.makedirs(data_dir, exist_ok=True)
+
+                # Get a list of existing data files
+                files = [f for f in os.listdir(data_dir) if f.startswith('F') and f.endswith('.rsdb')]
+                if files:
+                    # Extract file indices and find the last file index
+                    file_indices = [int(f[1:-5]) for f in files]
+                    last_file_idx = max(file_indices)
+                    last_file_name = f"F{last_file_idx}.rsdb"
+                    last_file_path = os.path.join(data_dir, last_file_name)
+    
+                    # Calculate current number of pages in the last file
+                    file_size = os.path.getsize(last_file_path)
+                    current_pages_in_file = file_size // self.dbc.pageSize
+    
+                    # Check if the last file can accommodate a new page
+                    if current_pages_in_file < self.dbc.dm_maxfilesize:
+
+
+                        with open(last_file_path, "ab") as file:
+                            file.close()
+                        # Return the new PageId
+                        return PageId(last_file_idx, current_pages_in_file)
+                    
                     else:
-                        #we create a new file
-                        with open(f"./{self.dbc.dbpath}/BinData/F{last_file+1}.rsdb", "wb") as fichier:
-                            fichier.write(b'\x00' * self.dbc.pageSize)  # Init the file with one empty page
-                            return PageId(last_file + 1, 0)
-            except Exception as openFail:
-                print(f"erreur d'ouverture de fichier = {openFail}")            
+                        # Create a new data file
+                        new_file_idx = last_file_idx + 1
+                        new_file_name = f"F{new_file_idx}.rsdb"
+                        new_file_path = os.path.join(data_dir, new_file_name)
+                        
+                        with open(new_file_path, "wb") as new_file:
+                            new_file.close()
+                        # Return the new PageId
+                        return PageId(new_file_idx, 0)
+                else:
+                    # No files exist yet; start with file index 0
+                    new_file_idx = 0
+                    new_file_name = f"F{new_file_idx}.rsdb"
+                    new_file_path = os.path.join(data_dir, new_file_name)
+                    with open(new_file_path, "wb") as new_file:
+                        new_file.close()
+                    # Return the new PageId
+                    return PageId(new_file_idx, 0)
+            except Exception as e:
+                print(f"Error in AllocPage: {e}")
+                return None
+    
+                
                 
             
         
-    def DeallocPage (pageId):
-        self.free_pages.append(pageId)
-        self.saveState()
+    def DeallocPage (self,PageId):
+        self.free_pages.append(PageId)
+        self.SaveState()
             
             
         
@@ -47,8 +78,9 @@ class DiskManager:
     def ReadPage(self, pageID, buff):
         try:
             with open(f"./{self.dbc.dbpath}/BinData/F{pageID.FileIdx}.rsdb", "rb") as fichier:
-                fichier.seek(self.dbc.pageSizepageID.PageIdx)
-                buff = bytearray(fichier.read(self.dbc.pageSize))
+                fichier.seek(self.dbc.pageSize*pageID.PageIdx)
+
+                buff.extend(fichier.read(self.dbc.pageSize))
 
         except Exception as openFail:
             print(f"erreur d'ouverture de fichier = {openFail}")
@@ -57,8 +89,8 @@ class DiskManager:
             
     def WritePage(self, pageID, buff):
         try:
-            with open(f"./{self.dbc.dbpath}/BinData/F{pageID.FileIdx}.rsdb", "wb") as fichier:
-                fichier.seek(self.dbc.pageSizepageID.PageIdx)
+            with open(f"./{self.dbc.dbpath}/BinData/F{pageID.FileIdx}.rsdb", "r+b") as fichier:
+                fichier.seek(self.dbc.pageSize*pageID.PageIdx)
                 fichier.write(buff)
 
         except Exception as openFail:
@@ -66,21 +98,32 @@ class DiskManager:
             
             
             
+         
+           
     def SaveState(self):
-       try:
-           with open(f"./{self.dbc.dbpath}/dm.save","w") as fichier:
-               for element in self.free_pages:
-                   fichier.write(element.encode('utf-8') + b'\n')
-       except Exception as openFail:
-           print(f"erreur d'ouverture de fichier = {openFail}")       
+        data_dir = os.path.join(self.dbc.dbpath, "db.save")
+        os.makedirs(data_dir, exist_ok=True)
+        
+        
+        try:
+            with open(f"./{self.dbc.dbpath}/dm.save", "wb") as fichier:
+                for element in self.free_pages:
+                    fichier.write(f"{element.FileIdx},{element.PageIdx}\n".encode())
+        except Exception as openFail:
+            print(f"Error opening file: {openFail}")
+  
   
     def LoadState(self):
-       try:
-           with open(f"./{self.dbc.dbpath}/dm.save", "rb") as fichier:
-               contenu = fichier.readlines()
-               self.free_pages = [ligne.decode('utf-8').strip() for ligne in contenu]
-       except Exception as openFail:
-           print(f"erreur d'ouverture de fichier = {openFail}")
+        try:
+            with open(f"./{self.dbc.dbpath}/dm.save", "r") as fichier:
+                contenu = fichier.readlines()
+                self.free_pages = [PageId(int(ligne.split(',')[0]), int(ligne.split(',')[1])) for ligne in contenu]
+        except FileNotFoundError:
+            # Initialize free_pages if file doesn't exist
+            self.free_pages = []
+        except Exception as openFail:
+            print(f"erreur d'ouverture de fichier = {openFail}")
+
               
                 
           
