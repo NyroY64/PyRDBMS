@@ -1,10 +1,16 @@
+from os import rename
+
+
 class Relation:
     
     
-    def __init__(self,r_name,nb_collumn):
+    def __init__(self,relationName,nbCollumn,colInfoList):
+        self.relationName=relationName
+        self.nbCollumn=nbCollumn
+        self.col_info_list = []
         
-        pass
+    
+    
+        
 
-    def some_method(self):
-        # Define a method for the class
-        pass
+    
