@@ -13,6 +13,21 @@ class DBConfig:
 
     def set_dbpath(self, dbpath):
         self.dbpath = dbpath
+<<<<<<< Updated upstream
+=======
+
+    def get_pageSize(self):
+        return self.pageSize
+
+    def set_pageSize(self, pageSize):
+        self.pageSize = pageSize
+
+    def get_dm_maxfilesize(self):
+        return self.dm_maxfilesize
+
+    def set_dm_maxfilesize(self, dm_maxfilesize):
+        self.dm_maxfilesize = dm_maxfilesize
+>>>>>>> Stashed changes
         
         
     @staticmethod    
