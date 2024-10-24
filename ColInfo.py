@@ -1,4 +1,5 @@
 class ColInfo:
+    #test comment
     def __init__(self, colNom, colType):
         self.colNom=colNom
         self.colType = colType
