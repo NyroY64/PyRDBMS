@@ -28,7 +28,7 @@ class BufferManager:
                 buffer[16:20] = struct.pack('f', float((time.time() - self.epoch_difference)*1000)) 
                 buffer1 = self.disk_manager.ReadPage(pageId)
                 buffer[20:] = buffer1
-                #buffer[120:] = lecture de la page du fichier)
+                
                 return i
 
         if(self.bm_policy == "LRU"):
